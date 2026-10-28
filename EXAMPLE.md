@@ -1,7 +1,10 @@
 # A worked example: the CRONUS order-qualification agents
 
 A real connected-agent topology, built for a conference demo against CRONUS USA, Inc., the
-standard Microsoft Dynamics demo company. Inspected in the maker portal on **2026-10-28**.
+standard Microsoft Dynamics demo company. Inspected in the maker portal and in its own exported
+definitions on **2026-10-28**. The definitions are published at
+[cronus-order-management-agents](https://github.com/dgpblogster/cronus-order-management-agents),
+so every claim below can be checked against source rather than taken on trust.
 
 It is useful precisely because it is ordinary. Nobody built it as a governance puzzle, and it
 still has every joint the [checklist](CHECKLIST.md) asks about.
@@ -9,12 +12,12 @@ still has every joint the [checklist](CHECKLIST.md) asks about.
 ## The shape
 
 ```text
-CRONUS Order Orchestrator          Standard harness, Claude Sonnet 4.6
+CRONUS Order Orchestrator          Standard harness, model hint Sonnet46
   |  no tools of its own
   |
-  +-- CRONUS Sales Specialist      Claude Opus 4.6     -> Cronus Master MCP Server
-  +-- CRONUS Finance Specialist    Claude Sonnet 4.6   -> Cronus Master MCP Server
-  +-- CRONUS Inventory Specialist  Claude Sonnet 4.6   -> Cronus Master MCP Server
+  +-- CRONUS Sales Specialist      model hint opus4-1   -> Cronus Master MCP Server
+  +-- CRONUS Finance Specialist    model hint Sonnet46  -> Cronus Master MCP Server
+  +-- CRONUS Inventory Specialist  model hint Sonnet46  -> Cronus Master MCP Server
 ```
 
 None of the three specialists has connected agents of its own, so the graph is one level deep.
@@ -62,6 +65,15 @@ the portal's Tools pane does not show you.
 prompt rather than a permission, on the strength of the portal view alone. That was wrong. The
 tool scoping above is from the agents' own definitions, cloned with `pac copilot clone`.
 
+**Context crosses on every hop.** All three connected-agent actions carry
+`historyType: ConversationHistory`, so the conversation the orchestrator is holding goes to
+each specialist it delegates to. The checklist asks for this per agent for a reason: it decides
+whether a credit discussion reaches the inventory agent, and here it does.
+
+**Every connection runs as the invoker.** `mode: Invoker` on all three, so each MCP call uses
+the signed-in user's connection. That is the third non-transitive thing, visible in source
+before anyone tests it.
+
 Two consequences, pulling in opposite directions:
 
 **Share the parent alone and you have shared nothing useful.** A user with only the
@@ -83,7 +95,10 @@ the matrix is worth filling in before the sharing conversation rather than after
 - *Who owns each connected agent?* One owner here, which is why the demo worked. Split that
   across a team and the agents cannot even be connected until sharing happens in both
   directions.
-- *Does any connected agent hold a privilege the parent lacks?* All three, and the same one.
+- *Does any connected agent hold a privilege the parent lacks?* All three. The parent holds no
+  tools at all, so every specialist can reach data it cannot. Not the same privilege, though:
+  three disjoint tool subsets on one connector.
+- *Context inclusion?* On, for all three.
 - *How many hops to verify?* Four, with Finance and Inventory in parallel.
 - *Blast radius of sharing one specialist?* That specialist's tool subset, without the
   orchestrator's sequencing and guardrails. Not the whole connector.
