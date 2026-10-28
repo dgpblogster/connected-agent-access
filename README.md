@@ -4,24 +4,27 @@ Sharing a Copilot Studio agent does not share what it reaches. This repo is the 
 the access matrix for working out what else you have to share, and the review questions for
 the case nobody checks.
 
-Companion to [Works on My Agent](https://www.theworkbench.blog) on
-[The Workbench](https://www.theworkbench.blog).
+Companion to [Works on My Agent, the New "Works on My Computer"](https://www.theworkbench.blog)
+on [The Workbench](https://www.theworkbench.blog). The agents it is written about are published
+at [cronus-order-management-agents](https://github.com/dgpblogster/cronus-order-management-agents).
 
 > The rule everything here follows from, verbatim from the documentation: **access to a parent
 > agent doesn't automatically grant access to its connected agents. Share each connected agent
 > separately with every intended user or group.**
 
-> **No script, on purpose.** None of this is exposed anywhere a script could read honestly:
-> there is no documented API that enumerates an agent's connected agents, their share lists,
-> and the identity each connection runs under. A tool that claimed to would be invention. The
-> checklist is the deliverable.
+> **No script, on purpose.** Some of the matrix *is* readable: `pac copilot clone` exports an
+> agent's connected agents, its per-tool grants, its connection references and its
+> context-inclusion setting, and [`EXAMPLE.md`](EXAMPLE.md) is filled in from exactly that. What
+> no documented API gives you is the column that decides whether the thing works for anyone
+> else: **who each agent is shared with**. A script that claimed to produce the whole matrix
+> would be inventing the half that matters. The checklist is the deliverable.
 
 ## What is here
 
 | Path | What it is |
 |---|---|
 | [`CHECKLIST.md`](CHECKLIST.md) | **Start here.** Pre-share checklist, the access matrix to fill in, the workflow-hop table, and how to verify as somebody who is not you. |
-| [`EXAMPLE.md`](EXAMPLE.md) | A **real** topology with the matrix filled in: a four-agent order-qualification demo where the parent holds no tools and all three children share one MCP server. |
+| [`EXAMPLE.md`](EXAMPLE.md) | A **real** topology with the matrix filled in, from its own exported definitions: a four-agent order-qualification demo where the parent holds no tools and the three children share one MCP connector but not the same grants on it. |
 | [`ESCALATION.md`](ESCALATION.md) | The case that is a security problem rather than an availability one: a connected agent holding privileges the parent lacks. Review questions and where controls belong. |
 
 ## The three non-transitive things
