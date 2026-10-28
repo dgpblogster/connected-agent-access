@@ -21,6 +21,7 @@ Companion to [Works on My Agent](https://www.theworkbench.blog) on
 | Path | What it is |
 |---|---|
 | [`CHECKLIST.md`](CHECKLIST.md) | **Start here.** Pre-share checklist, the access matrix to fill in, the workflow-hop table, and how to verify as somebody who is not you. |
+| [`EXAMPLE.md`](EXAMPLE.md) | A **real** topology with the matrix filled in: a four-agent order-qualification demo where the parent holds no tools and all three children share one MCP server. |
 | [`ESCALATION.md`](ESCALATION.md) | The case that is a security problem rather than an availability one: a connected agent holding privileges the parent lacks. Review questions and where controls belong. |
 
 ## The three non-transitive things
@@ -34,6 +35,8 @@ Sharing the parent covers none of them:
    fails *before* calling the second agent, so the symptom appears at the hop.
 3. **Connections.** They are tied to each individual user's identity, which is why an agent
    can work for you and not for anyone else.
+
+See [`EXAMPLE.md`](EXAMPLE.md) for what this looks like in a topology that actually exists.
 
 ## Verified
 
