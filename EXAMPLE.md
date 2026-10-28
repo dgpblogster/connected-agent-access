@@ -32,12 +32,15 @@ Its delegation order, from its own instructions:
 
 ## The access matrix, filled in
 
-| Agent | Role | Tools | Connected agents | Privileges the parent lacks |
-|---|---|---|---|---|
-| CRONUS Order Orchestrator | Primary | **none** | Sales, Finance, Inventory | n/a |
-| CRONUS Sales Specialist | Connected | Cronus Master MCP Server | none | **Yes: the MCP server** |
-| CRONUS Finance Specialist | Connected | Cronus Master MCP Server | none | **Yes: the MCP server** |
-| CRONUS Inventory Specialist | Connected | Cronus Master MCP Server | none | **Yes: the MCP server** |
+| Agent | Role | Connector | MCP tools actually granted | Connection reference | Connected agents |
+|---|---|---|---|---|---|
+| CRONUS Order Orchestrator | Primary | **none** | **none** | none | Sales, Finance, Inventory |
+| CRONUS Sales Specialist | Connected | Cronus Master MCP Server | `search_customer`, `get_customer_details`, `get_customer_pricing`, `get_order_history` | `cr83a_cronusSalesContextAssistant` | none |
+| CRONUS Finance Specialist | Connected | Cronus Master MCP Server | `get_credit_profile`, `calculate_credit_exposure` | `cr83a_financeCreditEvaluator` | none |
+| CRONUS Inventory Specialist | Connected | Cronus Master MCP Server | `get_inventory`, `check_availability` | `cr83a_inventoryFulfillmentSpecialist` | none |
+
+Every specialist's action declares `kind: UseSpecificTools` and runs with
+`connectionProperties: mode: Invoker`, meaning the signed-in user's connection.
 
 ## What the matrix shows
 
@@ -45,13 +48,19 @@ Its delegation order, from its own instructions:
 it reports, the customer number, the credit math, the stock position, arrives through a
 specialist.
 
-**All three specialists hold the same tool.** Not one MCP server each. The same
-`Cronus Master MCP Server`.
+**The portal and the source tell different stories, and the source is right.** In the maker
+portal all three specialists show the same entry under Tools, `Cronus Master MCP Server`, which
+reads like identical access. The cloned YAML shows otherwise: each action declares
+`UseSpecificTools` with a **disjoint** tool list, and each agent has its **own** connection
+reference on that shared connector. Sales cannot call `get_credit_profile`. Finance cannot call
+`get_inventory`.
 
-That second row is the one worth sitting with. The division of labour between Sales, Finance
-and Inventory is real in the instructions and absent in the permissions. Inventory's
-instructions say, in as many words, not to provide pricing or credit information. Nothing stops
-it. The scope separation is a prompt, and the three agents stand on identical ground.
+So the division of labour is enforced, not merely described. It is simply enforced somewhere
+the portal's Tools pane does not show you.
+
+**CORRECTION (2026-10-28):** an earlier version of this file claimed the separation was a
+prompt rather than a permission, on the strength of the portal view alone. That was wrong. The
+tool scoping above is from the agents' own definitions, cloned with `pac copilot clone`.
 
 Two consequences, pulling in opposite directions:
 
@@ -76,13 +85,16 @@ the matrix is worth filling in before the sharing conversation rather than after
   directions.
 - *Does any connected agent hold a privilege the parent lacks?* All three, and the same one.
 - *How many hops to verify?* Four, with Finance and Inventory in parallel.
-- *Blast radius of sharing one specialist?* The full MCP server, without the orchestrator's
-  guardrails.
+- *Blast radius of sharing one specialist?* That specialist's tool subset, without the
+  orchestrator's sequencing and guardrails. Not the whole connector.
 
 ## Verified and not verified
 
-**Observed in the maker portal on 2026-10-28:** every agent name, harness, model, tool, and
-connected-agent list in the tables above, read from each agent's Overview page.
+**Observed on 2026-10-28:** agent names, harness, models and the connected-agent list from
+each agent's Overview page in the maker portal. The connector, per-agent tool grants,
+connection references and `Invoker` mode from the agent definitions cloned with
+`pac copilot clone`, published at
+[cronus-order-management-agents](https://github.com/dgpblogster/cronus-order-management-agents).
 
 **Not exercised:** the sharing behaviour itself. Nobody signed in as a second user and walked
 the path, which is the one test [CHECKLIST.md](CHECKLIST.md) says matters most. Everything
